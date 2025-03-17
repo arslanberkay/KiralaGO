@@ -1,4 +1,6 @@
-﻿using System;
+﻿using KiralaGO.UI.Enum;
+using KiralaGO.UI.Interface;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,8 +12,8 @@ namespace KiralaGO.UI.Data
     {
         public string Marka { get; set; }
         public Renk Renk { get; set; }
-        public bool MusaitlikDurumu { get; set; }
-        public AracTipi AracTipi { get; set; }
+        public bool MusaitlikDurumu { get; set; } = true;
+        public AracTipi Tip { get; set; }
 
         private int _model;
         public int Model
@@ -43,17 +45,13 @@ namespace KiralaGO.UI.Data
                 {
                     throw new Exception("Günlük ücret negatif olamaz!");
                 }
+                _gunlukUcret = value;
             }
         }
-        
-        public void AracBilgisiGoster()
-        {
-            //Arabanın ToString() metodunu override etsek de olur mu?
-        }
 
-        public override string ToString()
+        public string AracBilgisiGoster()
         {
-            return Marka;
+            return $"{Marka} - {Tip} - {GunlukUcret} - Listelendi";
         }
 
     }

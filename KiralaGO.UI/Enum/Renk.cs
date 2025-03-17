@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KiralaGO.UI.Data
+namespace KiralaGO.UI.Enum
 {
     public enum Renk
     {
