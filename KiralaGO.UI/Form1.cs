@@ -2,6 +2,8 @@ using KiralaGO.UI.Data;
 using KiralaGO.UI.Enum;
 using KiralaGO.UI.Interface;
 using System.Globalization;
+using System.Reflection;
+using System.Text.Json;
 
 namespace KiralaGO.UI
 {
@@ -11,6 +13,8 @@ namespace KiralaGO.UI
         {
             InitializeComponent();
         }
+
+        List<KiralamaBilgisi> kiralananAraclar = new List<KiralamaBilgisi>();
 
         private void AracOlustur()
         {
@@ -65,6 +69,7 @@ namespace KiralaGO.UI
             }
 
             IArac secilenArac = cbAraclar.SelectedItem as IArac;
+            //IArac secilenArac = araclar[cbAraclar.SelectedIndex]; //araclar global alana alýnýp bu þekilde de yapýlabilir.
 
             //Seçilen deðer nullsa otomatik olarak combobox yazým formatý kiralandý olarak yazýldýðý için çýktý araç kiralandý olur
             if (secilenArac == null)
@@ -87,11 +92,14 @@ namespace KiralaGO.UI
             kiralamaBilgisi.Renk = secilenArac.Renk;
 
             lstKiralikAracGecmisi.Items.Add(kiralamaBilgisi);
+            kiralananAraclar.Add(kiralamaBilgisi);
             lblKiralikAracUcreti.Text = kiralamaUcreti.ToString("C", new CultureInfo("tr-TR"));
 
             //Seçilen aracý comboboxta kiralandý olarak yaz.
             cbAraclar.Items[cbAraclar.SelectedIndex] = $"{secilenArac.Renk} {secilenArac.Marka} {secilenArac.Tip} ({secilenArac.GunlukUcret}) - Kiralandý";
             secilenArac.MusaitlikDurumu = false;
+
+            //Temizle();
         }
 
         private void Temizle()
@@ -99,6 +107,62 @@ namespace KiralaGO.UI
             cbAraclar.SelectedItem = null;
             txtGunSayisi.Text = string.Empty;
             lblKiralikAracUcreti.Text = string.Empty;
+        }
+
+        //JSON dosyasýna veri eklemek ve kaydetmek için
+        private void JsonVeriKaydet()  
+        {
+            try
+            {   //Dosya ve Dizin Yolu Belirleme
+                string projeDizini = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location); //.exe(çalýþtýrýlabilir dosyanýn) bulunduðu dizinin yolunu döndürür.
+                string hedefDizin = Path.Combine(projeDizini, @"..\..\..\", "Data"); //Üç seviye yukarý çýkýyor (bin/Debug/net6.0/) Data adlý klasörü hedef olarak belirliyor.
+                string dosyaYolu = Path.Combine(hedefDizin, "data.json"); //Data klasörünün içinde data.json adlý dosyanýn tam yolu
+
+                //Klasör Kontrolü
+                if (!Directory.Exists(hedefDizin)) //Data klasörü yoksa
+                {
+                    Directory.CreateDirectory(hedefDizin); //Data klasörü oluþtur.
+                }
+
+                List<KiralamaBilgisi> guncelKiralamaBilgileri;
+
+                //Dosya Kontrolü - JSON Dosyasýnýn Okunmasý ve Mevcut Verilerin Alýnmasý
+                if (!File.Exists(dosyaYolu)) //data.json dosyasý yoksa
+                {
+                    guncelKiralamaBilgileri = new List<KiralamaBilgisi>(); //guncelKiralamaBilgileri boþ liste olarak oluþturuluyor.
+                }
+                else //data.json dosyasý varsa
+                {
+                    string eskiJson = File.ReadAllText(dosyaYolu); //Dosya içeriði okunuyor
+                    var eskiKiralamaBilgileri = JsonSerializer.Deserialize<List<KiralamaBilgisi>>(eskiJson); //JSON formatýndaki metin KiralamaBilgisi türündeki nesnelerin listesine dönüþtürülüyor
+
+                    if (eskiKiralamaBilgileri == null) 
+                    {
+                        return;
+                    }
+                    guncelKiralamaBilgileri = eskiKiralamaBilgileri; //Okunan veriler guncelKiralamaBilgileri listesine atanýyor.
+                }
+
+                //Yeni Verileri Listeye Eklemek
+                guncelKiralamaBilgileri.AddRange(kiralananAraclar); //kiralananAraclar listesindeki yeni kiralama bilgilerini guncelKiralamaBilgileri ne ekliyor.
+
+                //Güncellenmiþ Veriyi JSON Olarak Kaydetme
+                var jsonAyarlar = new JsonSerializerOptions { WriteIndented = true }; //JSON'un güzel okunabilir olmasýný saðlar
+                string yeniJson = JsonSerializer.Serialize(guncelKiralamaBilgileri, jsonAyarlar); //mevcutVeriler JSON formatýna çevriliyor.
+                File.WriteAllText(dosyaYolu, yeniJson); //data.json dosyasýna yazdýrýlýyor.
+
+                MessageBox.Show("Baþarýyla kaydedildi.");
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void btnKaydetJson_Click(object sender, EventArgs e)
+        {
+            JsonVeriKaydet();
         }
     }
 }

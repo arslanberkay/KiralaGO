@@ -38,6 +38,7 @@
             pictureBox1 = new PictureBox();
             lstKiralikAracGecmisi = new ListBox();
             btnAracKirala = new Button();
+            btnKaydetJson = new Button();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
@@ -126,7 +127,7 @@
             lstKiralikAracGecmisi.ItemHeight = 28;
             lstKiralikAracGecmisi.Location = new Point(30, 294);
             lstKiralikAracGecmisi.Name = "lstKiralikAracGecmisi";
-            lstKiralikAracGecmisi.Size = new Size(807, 172);
+            lstKiralikAracGecmisi.Size = new Size(810, 172);
             lstKiralikAracGecmisi.TabIndex = 2;
             // 
             // btnAracKirala
@@ -140,12 +141,24 @@
             btnAracKirala.UseVisualStyleBackColor = false;
             btnAracKirala.Click += btnAracKirala_Click;
             // 
+            // btnKaydetJson
+            // 
+            btnKaydetJson.BackColor = SystemColors.GradientActiveCaption;
+            btnKaydetJson.Location = new Point(586, 472);
+            btnKaydetJson.Name = "btnKaydetJson";
+            btnKaydetJson.Size = new Size(254, 52);
+            btnKaydetJson.TabIndex = 3;
+            btnKaydetJson.Text = "Kaydet (Json)";
+            btnKaydetJson.UseVisualStyleBackColor = false;
+            btnKaydetJson.Click += btnKaydetJson_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(11F, 28F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ControlLightLight;
-            ClientSize = new Size(893, 489);
+            ClientSize = new Size(869, 543);
+            Controls.Add(btnKaydetJson);
             Controls.Add(btnAracKirala);
             Controls.Add(lstKiralikAracGecmisi);
             Controls.Add(pictureBox1);
@@ -173,5 +186,6 @@
         private Button btnAracKirala;
         private Label lblKiralikAracUcreti;
         private Label label3;
+        private Button btnKaydetJson;
     }
 }

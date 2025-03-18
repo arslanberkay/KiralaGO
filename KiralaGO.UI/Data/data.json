@@ -1,0 +1,38 @@
+[
+  {
+    "AracMarka": "Nissan",
+    "Renk": 5,
+    "GunSayisi": 2,
+    "ToplamUcret": 3000
+  },
+  {
+    "AracMarka": "Mercedes",
+    "Renk": 1,
+    "GunSayisi": 3,
+    "ToplamUcret": 6900
+  },
+  {
+    "AracMarka": "Ford",
+    "Renk": 0,
+    "GunSayisi": 5,
+    "ToplamUcret": 9000
+  },
+  {
+    "AracMarka": "Ford",
+    "Renk": 0,
+    "GunSayisi": 10,
+    "ToplamUcret": 16200.0
+  },
+  {
+    "AracMarka": "Nissan",
+    "Renk": 5,
+    "GunSayisi": 10,
+    "ToplamUcret": 13500.0
+  },
+  {
+    "AracMarka": "Mercedes",
+    "Renk": 1,
+    "GunSayisi": 10,
+    "ToplamUcret": 20700.0
+  }
+]
