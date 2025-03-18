@@ -54,5 +54,10 @@ namespace KiralaGO.UI.Data
             return $"{Marka} - {Tip} - {GunlukUcret} - Listelendi";
         }
 
+        public override string ToString()
+        {
+            return $"{Renk} {Marka} {Tip} ({GunlukUcret}TL) - Uygun";
+        }
+
     }
 }

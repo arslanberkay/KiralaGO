@@ -1,18 +1,21 @@
 using KiralaGO.UI.Data;
 using KiralaGO.UI.Enum;
 using KiralaGO.UI.Interface;
+using System.Globalization;
 
 namespace KiralaGO.UI
 {
     public partial class Form1 : Form
     {
-
         public Form1()
         {
             InitializeComponent();
         }
-        List<KiralamaBilgisi> kiralananAraclar = new List<KiralamaBilgisi>();
-        List<IArac> araclar = new List<IArac>
+
+        private void AracOlustur()
+        {
+            //Araçlar oluþturuldu
+            List<IArac> araclar = new List<IArac>
             {
          new Araba { Marka = "Nissan", Model = 2025, Renk = Renk.Gri, GunlukUcret = 1500m,  Tip = AracTipi.Otomobil },
          new Araba { Marka = "Toyota", Model = 2024, Renk = Renk.Beyaz, GunlukUcret = 1400m, Tip = AracTipi.SUV },
@@ -23,14 +26,21 @@ namespace KiralaGO.UI
          new Araba { Marka = "Audi", Model = 2023, Renk = Renk.Beyaz, GunlukUcret = 2700m, Tip = AracTipi.Otomobil },
          new Araba { Marka = "Volkswagen", Model = 2022, Renk = Renk.Siyah, GunlukUcret = 1900m, Tip = AracTipi.SUV },
          new Araba { Marka = "Hyundai", Model = 2025, Renk = Renk.Mavi, GunlukUcret = 1500m, Tip = AracTipi.Otomobil },
-         new Araba { Marka = "Peugeot", Model = 2024, Renk = Renk.Kýrmýzý, GunlukUcret = 1700m, Tip = AracTipi.Kamyonet }
+         new Araba { Marka = "Peugeot", Model = 2024, Renk = Renk.Kýrmýzý, GunlukUcret = 1700m, Tip = AracTipi.Kamyonet },
+         new Araba { Marka = "Nissan", Model = 2025, Renk = Renk.Gri, GunlukUcret = 1500m, Tip = AracTipi.Otomobil },
+         new Araba { Marka = "Toyota", Model = 2023, Renk = Renk.Beyaz, GunlukUcret = 1300m, Tip = AracTipi.Otomobil },
+         new Araba { Marka = "BMW", Model = 2024, Renk = Renk.Siyah, GunlukUcret = 2500m, Tip = AracTipi.SUV },
+         new Araba { Marka = "Mercedes", Model = 2025, Renk = Renk.Mavi, GunlukUcret = 2700m, Tip = AracTipi.Otomobil },
+         new Araba { Marka = "Audi", Model = 2022, Renk = Renk.Gri, GunlukUcret = 2200m, Tip = AracTipi.SUV },
+         new Araba { Marka = "Ford", Model = 2021, Renk = Renk.Kýrmýzý, GunlukUcret = 1100m, Tip = AracTipi.SUV },
+         new Araba { Marka = "Honda", Model = 2023, Renk = Renk.Beyaz, GunlukUcret = 1250m, Tip = AracTipi.Otomobil },
+         new Araba { Marka = "Volkswagen", Model = 2024, Renk = Renk.Siyah, GunlukUcret = 1600m, Tip = AracTipi.Otomobil },
+         new Araba { Marka = "Hyundai", Model = 2023, Renk = Renk.Gri, GunlukUcret = 1400m, Tip = AracTipi.Otomobil },
+         new Araba { Marka = "Chevrolet", Model = 2022, Renk = Renk.Mavi, GunlukUcret = 1800m, Tip = AracTipi.SUV }
             };
-
-        private void AracOlustur()
-        {
             foreach (var arac in araclar)
             {
-                cbAraclar.Items.Add(arac.AracBilgisiGoster());
+                cbAraclar.Items.Add(arac);
             }
         }
 
@@ -41,43 +51,54 @@ namespace KiralaGO.UI
 
         private void btnAracKirala_Click(object sender, EventArgs e)
         {
-            if (cbAraclar.SelectedIndex == -1 || !int.TryParse(txtGunSayisi.Text, out int gunSayisi) || gunSayisi < 0)
+            //Araç seçme kontrolü
+            if (cbAraclar.SelectedIndex == -1)
             {
-                MessageBox.Show("Lütfen geçerli bir araç seçiniz veya bir araç süresi giriniz.");
+                MessageBox.Show("Lütfen bir araç seçiniz.");
+                return;
+            }
+            //Gün sayýsý kontrolü
+            if (!(int.TryParse(txtGunSayisi.Text, out int gunSayisi) && gunSayisi > 0))
+            {
+                MessageBox.Show("Gün sayýsý pozitif bir sayý olmalýdýr!");
                 return;
             }
 
-            IArac secilenArac = araclar[cbAraclar.SelectedIndex];
+            IArac secilenArac = cbAraclar.SelectedItem as IArac;
 
-            if (!secilenArac.MusaitlikDurumu)
+            //Seçilen deðer nullsa otomatik olarak combobox yazým formatý kiralandý olarak yazýldýðý için çýktý araç kiralandý olur
+            if (secilenArac == null)
             {
-                MessageBox.Show("Bu araç þuanda kirada");
-            }
-            decimal toplamUcret = secilenArac.GunlukUcret * gunSayisi;
-
-            if (gunSayisi >= 5)
-            {
-                toplamUcret *= 0.9m;
+                MessageBox.Show("Araç kiralandý.");
+                return;
             }
 
-            KiralamaBilgisi kiralamaBilgisi = new KiralamaBilgisi
+            decimal kiralamaUcreti = secilenArac.GunlukUcret * gunSayisi;
+
+            if (gunSayisi > 5)
             {
-                AracModel = secilenArac.Model.ToString(),
-                GunSayisi = gunSayisi,
-                ToplamUcret = toplamUcret,
+                kiralamaUcreti *= 0.9m; //%10 indirim uygulanýr.
+            }
 
-            };
+            KiralamaBilgisi kiralamaBilgisi = new KiralamaBilgisi();
+            kiralamaBilgisi.AracMarka = secilenArac.Marka;
+            kiralamaBilgisi.ToplamUcret = kiralamaUcreti;
+            kiralamaBilgisi.GunSayisi = gunSayisi;
+            kiralamaBilgisi.Renk = secilenArac.Renk;
 
-            kiralananAraclar.Add(kiralamaBilgisi);
             lstKiralikAracGecmisi.Items.Add(kiralamaBilgisi);
+            lblKiralikAracUcreti.Text = kiralamaUcreti.ToString("C", new CultureInfo("tr-TR"));
 
+            //Seçilen aracý comboboxta kiralandý olarak yaz.
+            cbAraclar.Items[cbAraclar.SelectedIndex] = $"{secilenArac.Renk} {secilenArac.Marka} {secilenArac.Tip} ({secilenArac.GunlukUcret}) - Kiralandý";
             secilenArac.MusaitlikDurumu = false;
+        }
 
-            cbAraclar.Items[cbAraclar.SelectedIndex] = $"{secilenArac.Model} - {secilenArac.Tip} - {secilenArac.GunlukUcret} - Kiralandý";
-
-            lblKiralikAracUcreti.Text = $"Toplam ücret : {toplamUcret}";
-
-
+        private void Temizle()
+        {
+            cbAraclar.SelectedItem = null;
+            txtGunSayisi.Text = string.Empty;
+            lblKiralikAracUcreti.Text = string.Empty;
         }
     }
 }
